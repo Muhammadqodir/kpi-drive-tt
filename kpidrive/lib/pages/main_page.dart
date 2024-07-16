@@ -16,12 +16,7 @@ class _MainPageState extends State<MainPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getData();
-  }
-
-  void getData() async {
-    await context.read<TasksCubit>().updateData();
-    context.read<TasksCubit>().getKanbanData();
+    context.read<TasksCubit>().updateData();
   }
 
   @override
@@ -30,6 +25,16 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("KPI DRIVE"),
+        actions: [
+          IconButton(
+            onPressed: () {
+              context.read<TasksCubit>().updateData();
+            },
+            icon: const Icon(
+              Icons.refresh,
+            ),
+          )
+        ],
       ),
       body: SafeArea(
         child: isLoading
@@ -45,9 +50,10 @@ class _MainPageState extends State<MainPage> {
                       vertical: 4,
                       horizontal: 18,
                     ),
+                    height: 60,
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      groupData.id,
+                      groupData.headerData.groupName,
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -60,7 +66,7 @@ class _MainPageState extends State<MainPage> {
                       key: ObjectKey(item.id),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(6),
-                        color: Colors.white,
+                        color: const Color(0xFF28282A),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.grey.withOpacity(0.2),
