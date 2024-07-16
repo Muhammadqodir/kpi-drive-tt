@@ -16,6 +16,7 @@ dependencies:
   flutter_bloc: ^8.1.6
   dio: ^5.5.0+1
   appflowy_board: ^0.1.2
+  fluttertoast: ^8.2.6
 
 dev_dependencies:
   flutter_test:

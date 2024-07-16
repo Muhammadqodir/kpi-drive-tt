@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:appflowy_board/appflowy_board.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kpidrive/api/api.dart';
 import 'package:kpidrive/models/taks.dart';
 
@@ -20,13 +21,17 @@ class TasksCubit extends Cubit<TasksState> {
         toIndex,
       ) async {
         emit(state.copyWith(absorbing: true));
-        int itemId = kanbanData[groupId]![fromIndex].indicatorToMoId ?? -1;
-        await api.updateField(
-          indicatorToMoId: itemId,
-          fieldName: "order",
-          fieldValue: toIndex + 1,
-        );
-        await updateData(showLoading: false);
+        try {
+          int itemId = kanbanData[groupId]![fromIndex].indicatorToMoId ?? -1;
+          await api.updateField(
+            indicatorToMoId: itemId,
+            fieldName: "order",
+            fieldValue: toIndex + 1,
+          );
+          await updateData(showLoading: false);
+        } catch (e) {
+          Fluttertoast.showToast(msg: e.toString());
+        }
         emit(state.copyWith(absorbing: false));
       },
       onMoveGroupItemToGroup: (
@@ -36,18 +41,23 @@ class TasksCubit extends Cubit<TasksState> {
         toIndex,
       ) async {
         emit(state.copyWith(absorbing: true));
-        int itemId = kanbanData[fromGroupId]![fromIndex].indicatorToMoId ?? -1;
-        await api.updateField(
-          indicatorToMoId: itemId,
-          fieldName: "parent_id",
-          fieldValue: toGroupId,
-        );
-        await api.updateField(
-          indicatorToMoId: itemId,
-          fieldName: "order",
-          fieldValue: toIndex + 1,
-        );
-        await updateData(showLoading: false);
+        try {
+          int itemId =
+              kanbanData[fromGroupId]![fromIndex].indicatorToMoId ?? -1;
+          await api.updateField(
+            indicatorToMoId: itemId,
+            fieldName: "parent_id",
+            fieldValue: toGroupId,
+          );
+          await api.updateField(
+            indicatorToMoId: itemId,
+            fieldName: "order",
+            fieldValue: toIndex + 1,
+          );
+          await updateData(showLoading: false);
+        } catch (e) {
+          Fluttertoast.showToast(msg: e.toString());
+        }
         emit(state.copyWith(absorbing: false));
       },
     );
@@ -64,18 +74,10 @@ class TasksCubit extends Cubit<TasksState> {
           taskList: await api.getTasks(),
         ),
       );
-    } catch (e, s) {
-      print("ApiError: " + e.toString());
+    } catch (e) {
+      Fluttertoast.showToast(msg: e.toString());
     }
     updateKanbanData();
-  }
-
-  Future<void> updateFieldOrder(int indicatorToMoId, int order) async {
-    await api.updateField(
-      indicatorToMoId: indicatorToMoId,
-      fieldName: "order",
-      fieldValue: order,
-    );
   }
 
   Map<String, List<Task>> kanbanData = {};

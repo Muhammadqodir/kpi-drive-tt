@@ -77,7 +77,6 @@ class Api {
       if (res.data["MESSAGES"]["error"] != null) {
         throw ApiExeption(res.data["MESSAGES"]["error"]);
       }
-      
       return true;
     } else {
       throw ApiExeption("${res.statusCode ?? -1}\n${res.data}");
