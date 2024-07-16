@@ -14,8 +14,8 @@ dependencies:
 
   cupertino_icons: ^1.0.6
   flutter_bloc: ^8.1.6
-  kanban_board: ^0.1.0
   dio: ^5.5.0+1
+  appflowy_board: ^0.1.2
 
 dev_dependencies:
   flutter_test:

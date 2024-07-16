@@ -13,15 +13,23 @@ class Api {
     };
   }
 
-  Future<List<Task>> getTasks() async {
+  Future<List<Task>> getTasks({
+    String periodStart = "2024-06-01",
+    String periodEnd = "2024-06-30",
+    String periodKey = "month",
+    String requestedMoId = "478",
+    String behaviourKey = "task",
+    String withResult = "false",
+    String authUserId = "2",
+  }) async {
     var formData = FormData.fromMap({
-      "period_start": "2024-06-01",
-      "period_end": "2024-06-30",
-      "period_key": "month",
-      "requested_mo_id": "478",
-      "behaviour_key": "task",
-      "with_result": "false",
-      "auth_user_id": "2"
+      "period_start": periodStart,
+      "period_end": periodEnd,
+      "period_key": periodKey,
+      "requested_mo_id": requestedMoId,
+      "behaviour_key": behaviourKey,
+      "with_result": withResult,
+      "auth_user_id": authUserId,
     });
     Response res = await client.post(
       "${BASE_URL}indicators/get_mo_indicators",

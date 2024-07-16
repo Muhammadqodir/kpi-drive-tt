@@ -1,7 +1,6 @@
+import 'package:appflowy_board/appflowy_board.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kanban_board/custom/board.dart';
-import 'package:kanban_board/models/inputs.dart';
 import 'package:kpidrive/cubit/tasks_cubit.dart';
 import 'package:kpidrive/models/taks.dart';
 
@@ -17,12 +16,16 @@ class _MainPageState extends State<MainPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    context.read<TasksCubit>().updateData();
+    getData();
+  }
+
+  void getData() async {
+    await context.read<TasksCubit>().updateData();
+    context.read<TasksCubit>().getKanbanData();
   }
 
   @override
   Widget build(BuildContext context) {
-    Map<String, List<Task>> data = context.watch<TasksCubit>().getKanbanData();
     bool isLoading = context.watch<TasksCubit>().state.isLoading;
     return Scaffold(
       appBar: AppBar(
@@ -30,25 +33,54 @@ class _MainPageState extends State<MainPage> {
       ),
       body: SafeArea(
         child: isLoading
-            ? Center(
+            ? const Center(
                 child: CircularProgressIndicator(),
               )
-            : KanbanBoard(
-                data.keys
-                    .map(
-                      (title) => BoardListsData(
-                        header: Text("test"),
-                        items: data[title]!
-                            .map(
-                              (e) => Container(
-                                padding: const EdgeInsets.all(6),
-                                child: Text(e.name ?? "undefined"),
-                              ),
-                            )
-                            .toList(),
+            : AppFlowyBoard(
+                groupConstraints: const BoxConstraints(maxWidth: 300),
+                controller: context.read<TasksCubit>().controller,
+                headerBuilder: (context, groupData) {
+                  return Container(
+                    margin: const EdgeInsets.symmetric(
+                      vertical: 4,
+                      horizontal: 18,
+                    ),
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      groupData.id,
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  );
+                },
+                cardBuilder: (context, groupData, item) {
+                  if (item is TextItem) {
+                    return AppFlowyGroupCard(
+                      key: ObjectKey(item.id),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(6),
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            spreadRadius: 1,
+                            blurRadius: 2,
+                            offset: const Offset(0, 1),
+                          )
+                        ],
                       ),
-                    )
-                    .toList(),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Text(item.s),
+                        ),
+                      ),
+                    );
+                  }
+                  throw UnimplementedError();
+                },
               ),
       ),
     );
