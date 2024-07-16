@@ -14,27 +14,20 @@ class TasksCubit extends Cubit<TasksState> {
 
   TasksCubit() : super(TasksState()) {
     controller = AppFlowyBoardController(
-      onMoveGroup: (
-        fromGroupId,
-        fromIndex,
-        toGroupId,
-        toIndex,
-      ) {
-        debugPrint('Move item from $fromIndex to $toIndex');
-      },
       onMoveGroupItem: (
         groupId,
         fromIndex,
         toIndex,
       ) async {
-        debugPrint('Move item from $fromIndex to $toIndex');
+        emit(state.copyWith(absorbing: true));
         int itemId = kanbanData[groupId]![fromIndex].indicatorToMoId ?? -1;
         await api.updateField(
           indicatorToMoId: itemId,
           fieldName: "order",
           fieldValue: toIndex + 1,
         );
-        updateData();
+        await updateData(showLoading: false);
+        emit(state.copyWith(absorbing: false));
       },
       onMoveGroupItemToGroup: (
         fromGroupId,
@@ -42,6 +35,7 @@ class TasksCubit extends Cubit<TasksState> {
         toGroupId,
         toIndex,
       ) async {
+        emit(state.copyWith(absorbing: true));
         int itemId = kanbanData[fromGroupId]![fromIndex].indicatorToMoId ?? -1;
         await api.updateField(
           indicatorToMoId: itemId,
@@ -53,7 +47,8 @@ class TasksCubit extends Cubit<TasksState> {
           fieldName: "order",
           fieldValue: toIndex + 1,
         );
-        updateData();
+        await updateData(showLoading: false);
+        emit(state.copyWith(absorbing: false));
       },
     );
   }

@@ -22,6 +22,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     bool isLoading = context.watch<TasksCubit>().state.isLoading;
+    bool absorbing = context.watch<TasksCubit>().state.absorbing;
     return Scaffold(
       appBar: AppBar(
         title: const Text("KPI DRIVE"),
@@ -41,52 +42,55 @@ class _MainPageState extends State<MainPage> {
             ? const Center(
                 child: CircularProgressIndicator(),
               )
-            : AppFlowyBoard(
-                groupConstraints: const BoxConstraints(maxWidth: 300),
-                controller: context.read<TasksCubit>().controller,
-                headerBuilder: (context, groupData) {
-                  return Container(
-                    margin: const EdgeInsets.symmetric(
-                      vertical: 4,
-                      horizontal: 18,
-                    ),
-                    height: 60,
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      groupData.headerData.groupName,
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                  );
-                },
-                cardBuilder: (context, groupData, item) {
-                  if (item is TextItem) {
-                    return AppFlowyGroupCard(
-                      key: ObjectKey(item.id),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(6),
-                        color: const Color(0xFF28282A),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
-                            spreadRadius: 1,
-                            blurRadius: 2,
-                            offset: const Offset(0, 1),
-                          )
-                        ],
+            : AbsorbPointer(
+                absorbing: absorbing,
+                child: AppFlowyBoard(
+                  groupConstraints: const BoxConstraints(maxWidth: 300),
+                  controller: context.read<TasksCubit>().controller,
+                  headerBuilder: (context, groupData) {
+                    return Container(
+                      margin: const EdgeInsets.symmetric(
+                        vertical: 4,
+                        horizontal: 18,
                       ),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: Text(item.s),
-                        ),
+                      height: 60,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        groupData.headerData.groupName,
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                     );
-                  }
-                  throw UnimplementedError();
-                },
+                  },
+                  cardBuilder: (context, groupData, item) {
+                    if (item is TextItem) {
+                      return AppFlowyGroupCard(
+                        key: ObjectKey(item.id),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(6),
+                          color: const Color(0xFF28282A),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              spreadRadius: 1,
+                              blurRadius: 2,
+                              offset: const Offset(0, 1),
+                            )
+                          ],
+                        ),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: Text(item.s),
+                          ),
+                        ),
+                      );
+                    }
+                    throw UnimplementedError();
+                  },
+                ),
               ),
       ),
     );
