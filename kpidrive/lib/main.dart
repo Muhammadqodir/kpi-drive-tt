@@ -16,6 +16,7 @@ class MyApp extends StatelessWidget {
       create: (context) => TasksCubit(),
       child: MaterialApp(
         title: 'KPI DRIVE',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
